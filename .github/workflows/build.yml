@@ -34,11 +34,14 @@ jobs:
       run: |
         file="padavan-ng/trunk/user/busybox/busybox-1.37.0/networking/libiproute/iplink.c"
         [[ -f "$file" ]] || { echo "BusyBox iplink.c not found: $file"; exit 1; }
-
-        perl -0pi -e 's/\n(\s*flag = CAN_CTRLMODE_FD;\n\s*break;)/\n#ifdef CAN_CTRLMODE_FD$1\n#endif/s' "$file"
-        perl -0pi -e 's/\n(\s*flag = CAN_CTRLMODE_FD_NON_ISO;\n\s*break;)/\n#ifdef CAN_CTRLMODE_FD_NON_ISO$1\n#endif/s' "$file"
-        perl -0pi -e 's/\n(\s*flag = CAN_CTRLMODE_PRESUME_ACK;\n\s*break;)/\n#ifdef CAN_CTRLMODE_PRESUME_ACK$1\n#endif/s' "$file"
-        perl -0pi -e 's/(\s*addattr_l\(&req\.n, sizeof\(req\), IFLA_CAN_TERMINATION, &val, sizeof\(val\)\);)/#ifdef IFLA_CAN_TERMINATION\n$1\n#endif/' "$file"
+        sed -i '/CAN_CTRLMODE_FD/d' "$file"
+        sed -i '/CAN_CTRLMODE_FD_NON_ISO/d' "$file"
+        sed -i '/CAN_CTRLMODE_PRESUME_ACK/d' "$file"
+        sed -i '/IFLA_CAN_TERMINATION/d' "$file"
+        sed -i '/case CAN_BITTIMING_CONST:/,/break;/d' "$file"
+        sed -i '/case CAN_CTRLMODE:/,/break;/d' "$file"
+        sed -i '/case CAN_RESTART_MS:/,/break;/d' "$file"
+        sed -i '/case CAN_RESTART:/,/break;/d' "$file"
 
     - name: Install themes
       run: |
